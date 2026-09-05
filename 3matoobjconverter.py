@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Aug 19 19:04:09 2023
+Created on Sat Aug 19 2023
+Modified on Fri Sep 4 2026
 
 @author: Gxiraudon
 @forked by: Jarred
@@ -12,6 +13,7 @@ import json
 
 # Gui
 import tkinter as tk
+from tkinter import font
 import tkinter.messagebox as messagebox
 import tkinter.filedialog 
 
@@ -58,7 +60,93 @@ class Application:
         fout.close()
         
     def main(self):
+        # ------Root------
         self.root = tk.Tk()
+        self.root.geometry("500x445")
+        
+        # ------Title and Controls------
+        self.title = tk.Label(
+            self.root,
+            text="3ma To Obj Converter",
+            bg="#000555",
+            foreground="#FFFFFF",
+            font=font.Font(weight="bold", size=45)
+        )
+        self.title.pack(
+            fill="both"           
+        )
+        
+        self.inputText = tk.Label(
+            self.root,
+            text="Input File:"
+        )
+        self.inputText.pack(
+            anchor="nw",
+            padx=10,
+            pady=10
+        )
+        
+        self.inputBox = tk.Entry(
+            self.root    
+        )
+        self.inputBox.pack(
+            fill="both",
+            padx=20,
+            pady=10
+        )
+        
+        self.browseInputButton = tk.Button(
+            self.root,
+            text="...",
+            bg="#050055",
+            foreground="#FFFFFF"
+        )
+        self.browseInputButton.pack(
+            anchor="ne",
+            padx=23
+        )
+        
+        self.outputText = tk.Label(
+            self.root,
+            text="Converted Output File:"
+        )
+        self.outputText.pack(
+            anchor="nw",
+            padx=10,
+            pady=10
+        )
+        
+        self.outputBox = tk.Entry(
+            self.root    
+        )
+        self.outputBox.pack(
+            fill="both",
+            padx=20,
+            pady=10
+        )
+        
+        self.browseInputButton = tk.Button(
+            self.root,
+            text="...",
+            bg="#050055",
+            foreground="#FFFFFF"
+        )
+        self.browseInputButton.pack(
+            anchor="ne",
+            padx=23
+        )
+        
+        self.convertButton = tk.Button(
+            self.root,
+            text="Convert Now",
+            bg="#050055",
+            foreground="#FFFFFF"
+        )
+        self.convertButton.pack(
+            pady=23
+        )
+        
+        # ------MainLoop------
         tk.mainloop()
         
 if __name__ == "__main__":
