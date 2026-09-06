@@ -1,0 +1,71 @@
+name: Build Windows Python 3.11 x86
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python x86
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: 'x86'
+          cache: pip
+
+      - name: Verify Python
+        shell: cmd
+        run: |
+          python --version
+          python -c "import struct; print('Python:', struct.calcsize('P') * 8, 'bit')"
+
+      - name: Install dependencies
+        shell: cmd
+        run: |
+          python -m pip install --upgrade pip
+          
+      - name: Test Tkinter
+        shell: cmd
+        run: |
+          python -c "import tkinter; print('Tkinter OK')"
+          python -c "import tkinter; print('Tcl:', tkinter.Tcl().eval('info patchlevel'))"
+
+      - name: Build with Nuitka
+        uses: Nuitka/Nuitka-Action@main
+        with:
+          nuitka-version: main
+
+          script-name: 3matoobjconverter.py
+
+          mode: standalone
+
+          enable-plugins: |
+            tk-inter
+
+          windows-console-mode: disable
+
+          output-dir: build
+
+          assume-yes-for-downloads: true
+
+          jobs: 1
+
+          lto: no
+
+      - name: Upload Windows 3.11 x86 build
+        uses: actions/upload-artifact@v4
+        with:
+          name: 3matoobjconverter-Windows-3.11-x86
+          path: |
+            build/*.dist/**
+            build/*.exe
+          include-hidden-files: true
