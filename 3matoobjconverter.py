@@ -25,6 +25,7 @@ input_filename_3ma = ""
 output_filename_3ma = ""
 
 class Application:
+    # Status Bar Manipulation
     async def setStatusText(self, statusText, length=1, *args, **kwargs):
         self.statusbar.config(text=statusText)
         await asyncio.sleep(length)
@@ -35,7 +36,8 @@ class Application:
     
     async def doneStatus(self):
         await self.setStatusText("Convert Done")
-        
+     
+    # Get Entry Texts     
     def getInputBox(self):
         inputText = self.inputBox.get()
         return inputText
@@ -43,7 +45,8 @@ class Application:
     def getOutputBox(self):
         outputText = self.outputBox.get()
         return outputText
-        
+      
+    # Check Path Exists or Emptt  
     def checkInputPathExist(self):
         strInputPath = self.getInputBox()
         if not os.path.exists(strInputPath):
@@ -92,6 +95,7 @@ class Application:
         else:
             return False
     
+    # code from the author: Gxiraudon
     def convert(self):
         global input_filename_3ma, output_filename_3ma
         file_3ma = open(input_filename_3ma)
@@ -133,6 +137,22 @@ class Application:
         fout.close()
         asyncio.run(self.doneStatus())
         
+    # ------Events------    
+    # Input Browse on Click
+    def on_input_browse_click(self):
+        filterInput = [
+            ("3ma Files", "*.3ma"),
+            ("All Files", "*.*")
+        ]
+    
+    # Output Browse on Click
+    def on_output_browse_click(self):
+        filterOutput = [
+            ("Obj Files", "*.obj"),
+            ("All Files", "*.*")
+        ]
+    
+    # Convert Button on Click
     def on_convert_click(self):
         if self.checkInputPathExist() == False:
             return
