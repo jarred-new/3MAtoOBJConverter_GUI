@@ -78,8 +78,10 @@ class Application:
             fill="both"           
         )
         
+        """
         winwidth = self.root.winfo_width()
         winheight = self.root.winfo_height()
+        """
         
         self.controlLayout = tk.Frame(
             self.root,            
