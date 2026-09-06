@@ -12,6 +12,7 @@ Modified on Fri Sep 4 2026
 import json
 import threading
 import asyncio
+import os
 
 # Gui
 import tkinter as tk
@@ -34,6 +35,62 @@ class Application:
     
     async def doneStatus(self):
         await self.setStatusText("Convert Done")
+        
+    def getInputBox(self):
+        inputText = self.inputBox.get()
+        return inputText
+        
+    def getOutputBox(self):
+        outputText = self.outputBox.get()
+        return outputText
+        
+    def checkInputPathExist(self):
+        strInputPath = self.getInputBox()
+        if not os.path.exists(strInputPath):
+            messagebox.showerror(
+                "Error",
+                "The path in the input file does not exist",
+                parent=self.root
+            )
+            return False
+        else:
+            return True
+            
+    def checkOutputPathExist(self):
+        strOutputPath = self.getOutputBox()
+        if not os.path.exists(strOutputPath):
+            messagebox.showerror(
+                "Error",
+                "The path in the output file does not exist",
+                parent=self.root
+            )
+            return False
+        else:
+            return True
+    
+    def checkInputPathEmpty(self):
+        strInputPath = self.getInputBox()
+        if not strInputPath:
+            messagebox.showerror(
+                "Error",
+                "The path in the input box is left empty",
+                parent=self.root
+            )
+            return True
+        else:
+            return False
+            
+    def checkOutputPathEmpty(self):
+        strOutputPath = self.getOutputBox()
+        if not strOutputPath:
+            messagebox.showerror(
+                "Error",
+                "The path in the output box is left empty",
+                parent=self.root
+            )
+            return True
+        else:
+            return False
     
     def convert(self):
         global input_filename_3ma, output_filename_3ma
@@ -75,6 +132,23 @@ class Application:
         file_3ma.close()
         fout.close()
         asyncio.run(self.doneStatus())
+        
+    def on_convert_click(self):
+        if self.checkInputPathExist() == False:
+            return
+        if self.checkOutputPathExist() == False:
+            return
+        if self.checkInputPathEmpty() == True:
+            return
+        if self.checkOutputPathEmpty() == True:
+            return
+            
+        convertThread = threading.Thread(
+            target=self.convert
+        )
+        
+        convertThread.start()      
+        convertThread.join()
         
     def main(self):
         # ------Root------
@@ -173,7 +247,8 @@ class Application:
             self.controlLayout,
             text="Convert Now",
             bg="#050055",
-            foreground="#FFFFFF"
+            foreground="#FFFFFF",
+            command=self.on_convert_click
         )
         self.convertButton.pack(
             pady=23
