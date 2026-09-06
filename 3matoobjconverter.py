@@ -63,8 +63,9 @@ class Application:
         # ------Root------
         self.root = tk.Tk()
         self.root.geometry("500x445")
+        self.root.update_idletasks()
         
-        # ------Title and Controls------
+        # ------Title, Controls, and Footer------
         self.title = tk.Label(
             self.root,
             text="3ma To Obj Converter",
@@ -73,11 +74,24 @@ class Application:
             font=font.Font(weight="bold", size=45)
         )
         self.title.pack(
+            side="top",
             fill="both"           
         )
         
+        winwidth = self.root.winfo_width()
+        winheight = self.root.winfo_height()
+        
+        self.controlLayout = tk.Frame(
+            self.root,            
+        )
+        self.controlLayout.pack_propagate(True)
+        self.controlLayout.place(
+            relx=0.5, rely=0.5, 
+            anchor="center"
+        )
+        
         self.inputText = tk.Label(
-            self.root,
+            self.controlLayout,
             text="Input File:"
         )
         self.inputText.pack(
@@ -87,7 +101,7 @@ class Application:
         )
         
         self.inputBox = tk.Entry(
-            self.root    
+            self.controlLayout    
         )
         self.inputBox.pack(
             fill="both",
@@ -96,7 +110,7 @@ class Application:
         )
         
         self.browseInputButton = tk.Button(
-            self.root,
+            self.controlLayout,
             text="...",
             bg="#050055",
             foreground="#FFFFFF"
@@ -107,7 +121,7 @@ class Application:
         )
         
         self.outputText = tk.Label(
-            self.root,
+            self.controlLayout,
             text="Converted Output File:"
         )
         self.outputText.pack(
@@ -117,7 +131,7 @@ class Application:
         )
         
         self.outputBox = tk.Entry(
-            self.root    
+            self.controlLayout    
         )
         self.outputBox.pack(
             fill="both",
@@ -126,7 +140,7 @@ class Application:
         )
         
         self.browseInputButton = tk.Button(
-            self.root,
+            self.controlLayout,
             text="...",
             bg="#050055",
             foreground="#FFFFFF"
@@ -137,7 +151,7 @@ class Application:
         )
         
         self.convertButton = tk.Button(
-            self.root,
+            self.controlLayout,
             text="Convert Now",
             bg="#050055",
             foreground="#FFFFFF"
@@ -146,7 +160,19 @@ class Application:
             pady=23
         )
         
-        # ------MainLoop------
+        self.footer = tk.Label(
+            self.root,
+            text="author: Gxiraudon | forked by: Jarred",
+            bg="#000555",
+            foreground="#FFFFFF",
+            font=font.Font(weight="bold", size=14)
+        )
+        self.footer.pack(
+            side="bottom",
+            fill="both"           
+        )
+        
+        # ------MainLoop------        
         tk.mainloop()
         
 if __name__ == "__main__":
