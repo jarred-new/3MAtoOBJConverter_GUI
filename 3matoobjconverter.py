@@ -10,6 +10,8 @@ Modified on Fri Sep 4 2026
 """
 
 import json
+import threading
+import asyncio
 
 # Gui
 import tkinter as tk
@@ -22,7 +24,19 @@ input_filename_3ma = ""
 output_filename_3ma = ""
 
 class Application:
+    async def setStatusText(self, statusText, length=1, *args, **kwargs):
+        self.statusbar.config(text=statusText)
+        await asyncio.sleep(length)
+        self.statusbar.config(text="Ready")
+        
+    async def convertingStatus(self):
+        await self.setStatusText("Converting to OBJ")
+    
+    async def doneStatus(self):
+        await self.setStatusText("Convert Done")
+    
     def convert(self):
+        global input_filename_3ma, output_filename_3ma
         file_3ma = open(input_filename_3ma)
         fjile_3ma = json.loads(file_3ma.read())
         fout = open(output_filename_3ma,"wt")
@@ -31,6 +45,8 @@ class Application:
         forward = 0
         meshes = fjile_3ma["meshes"]
         mesh_num = len(meshes)
+        
+        asyncio.run(self.convertingStatus())
         
         for msh in range(mesh_num):
             
@@ -58,6 +74,7 @@ class Application:
         
         file_3ma.close()
         fout.close()
+        asyncio.run(self.doneStatus())
         
     def main(self):
         # ------Root------
@@ -160,6 +177,18 @@ class Application:
         )
         self.convertButton.pack(
             pady=23
+        )
+        
+        self.statusbar = tk.Label(
+            self.root,
+            text="Ready",
+            bg="#000555",
+            foreground="#FFFFFF",
+            font=font.Font(weight="bold", size=14)
+        )
+        self.statusbar.pack(
+            side="bottom",
+            fill="both"           
         )
         
         self.footer = tk.Label(
