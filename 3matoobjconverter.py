@@ -18,26 +18,41 @@ import os
 import tkinter as tk
 from tkinter import font
 import tkinter.messagebox as messagebox
-import tkinter.filedialog 
+from tkinter import filedialog as fd
 
 # The global variables of input and output paths
 input_filename_3ma = ""
 output_filename_3ma = ""
 
 class Application:
-    # Status Bar Manipulation
+    # ------Status Bar Manipulation------
+    # Set Status Text Function
     async def setStatusText(self, statusText, length=1, *args, **kwargs):
         self.statusbar.config(text=statusText)
         await asyncio.sleep(length)
         self.statusbar.config(text="Ready")
         
+    # Convertion Status   
     async def convertingStatus(self):
         await self.setStatusText("Converting to OBJ")
     
     async def doneStatus(self):
         await self.setStatusText("Convert Done")
+        
+    # Browse File Status
+    async def inputImportDoneStatus(self):
+        await self.setStatusText("Input File Loaded", 2)
+        
+    async def outputImportDoneStatus(self):
+        await self.setStatusText("Output File Loaded", 2)
+        
+    async def inputImportCancelledStatus(self):
+        await self.setStatusText("Input File Load Cancelled by User", 2)
+    
+    async def outputImportCancelledStatus(self):
+        await self.setStatusText("Output File Load Cancelled by User", 2)   
      
-    # Get Entry Texts     
+    # ------Get Entry Texts------
     def getInputBox(self):
         inputText = self.inputBox.get()
         return inputText
@@ -46,7 +61,7 @@ class Application:
         outputText = self.outputBox.get()
         return outputText
       
-    # Check Path Exists or Emptt  
+    # ------Check Path Exists or Empty------
     def checkInputPathExist(self):
         strInputPath = self.getInputBox()
         if not os.path.exists(strInputPath):
@@ -144,6 +159,17 @@ class Application:
             ("3ma Files", "*.3ma"),
             ("All Files", "*.*")
         ]
+        
+        input_selection = fd.askopenfilename(
+            title="Open 3ma File...",
+            filetypes=filterInput            
+        )
+        
+        if input_selection:
+            self.inputBox.config(text=input_selection)
+            asyncio.run(self.inputImportDoneStatus())            
+        else:
+            asyncio.run(self.inputImportCancelledStatus())
     
     # Output Browse on Click
     def on_output_browse_click(self):
@@ -151,6 +177,17 @@ class Application:
             ("Obj Files", "*.obj"),
             ("All Files", "*.*")
         ]
+        
+        output_selection = fd.askopenfilename(
+            title="Save Converted obj File as...",
+            filetypes=filterOutput            
+        )
+        
+        if output_selection:
+            self.outputBox.config(text=output_selection)
+            asyncio.run(self.outputImportDoneStatus())            
+        else:
+            asyncio.run(self.outputImportCancelledStatus())
     
     # Convert Button on Click
     def on_convert_click(self):
@@ -226,7 +263,8 @@ class Application:
             self.controlLayout,
             text="...",
             bg="#050055",
-            foreground="#FFFFFF"
+            foreground="#FFFFFF",
+            command=self.on_input_browse_click
         )
         self.browseInputButton.pack(
             anchor="ne",
@@ -252,13 +290,14 @@ class Application:
             pady=10
         )
         
-        self.browseInputButton = tk.Button(
+        self.browseOutputButton = tk.Button(
             self.controlLayout,
             text="...",
             bg="#050055",
-            foreground="#FFFFFF"
+            foreground="#FFFFFF",
+            command=self.on_output_browse_click
         )
-        self.browseInputButton.pack(
+        self.browseOutputButton.pack(
             anchor="ne",
             padx=23
         )
