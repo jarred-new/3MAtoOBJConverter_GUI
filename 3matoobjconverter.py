@@ -266,7 +266,10 @@ class Application:
         )
 
         self.inputBox = tk.Entry(
-            self.controlLayout    
+            self.controlLayout              
+        )
+        self.inputBox.config(
+            state="readonly"
         )
         self.inputBox.pack(
             fill="both",
@@ -297,9 +300,12 @@ class Application:
         )
 
         self.outputBox = tk.Entry(
-            self.controlLayout    
+            self.controlLayout
         )
-        self.outputBox.pack(
+        self.outputBox.config(
+            state="readonly"
+        )
+        self.outputBox.pack(         
             fill="both",
             padx=20,
             pady=10
