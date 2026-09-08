@@ -228,7 +228,7 @@ class Application:
     def main(self):
         # ------Root------
         self.root = tk.Tk()
-        self.root.geometry("500x445")
+        self.root.geometry("1000x445")
         self.root.update_idletasks()
 
         # ------Title, Controls, and Footer------
@@ -237,7 +237,7 @@ class Application:
             text="3ma To Obj Converter",
             bg="#000555",
             foreground="#FFFFFF",
-            font=font.Font(weight="bold", size=45)
+            font=font.Font(weight="bold", size=32)
         )
         self.title.pack(
             side="top",
