@@ -229,6 +229,8 @@ class Application:
         # ------Root------
         self.root = tk.Tk()
         self.root.geometry("1000x445")
+        self.title = "3ma To Obj Converter"
+        self.root.title(self.title)
         self.root.update_idletasks()
 
         # ------Title, Controls, and Footer------
