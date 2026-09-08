@@ -11,7 +11,6 @@ Modified on Fri Sep 4 2026
 
 import json
 import threading
-import asyncio
 import os
 
 # Gui
@@ -26,31 +25,11 @@ output_filename_3ma = ""
 
 class Application:
     # ------Status Bar Manipulation------
-    # Set Status Text Function
-    async def setStatusText(self, statusText, length=1, *args, **kwargs):
-        self.statusbar.config(text=statusText)
-        await asyncio.sleep(length)
-        self.statusbar.config(text="Ready")
-
-    # Convertion Status   
-    async def convertingStatus(self):
-        await self.setStatusText("Converting to OBJ")
-
-    async def doneStatus(self):
-        await self.setStatusText("Convert Done")
-
-    # Browse File Status
-    async def inputImportDoneStatus(self):
-        await self.setStatusText("Input File Loaded", 2)
-
-    async def outputImportDoneStatus(self):
-        await self.setStatusText("Output File Loaded", 2)
-
-    async def inputImportCancelledStatus(self):
-        await self.setStatusText("Input File Load Cancelled by User", 2)
-
-    async def outputImportCancelledStatus(self):
-        await self.setStatusText("Output File Load Cancelled by User", 2)   
+    def set_status_text(self, status_text, reset_after=None):
+        """Update Tkinter widgets on the main thread only."""
+        self.statusbar.config(text=status_text)
+        if reset_after is not None:
+            self.root.after(reset_after * 1000, self.set_status_text, "Ready")
 
     # ------Get Entry Texts------
     def getInputBox(self):
@@ -120,18 +99,20 @@ class Application:
             return False
 
     # code from the author: Gxiraudon
-    def convert(self):
-        global input_filename_3ma, output_filename_3ma
-        file_3ma = open(input_filename_3ma)
-        fjile_3ma = json.loads(file_3ma.read())
-        fout = open(output_filename_3ma,"wt")
+    def convert(self, input_filename, output_filename):
+        with open(input_filename, encoding="utf-8") as file_3ma:
+            fjile_3ma = json.load(file_3ma)
+
+        with open(output_filename, "w", encoding="utf-8") as fout:
+            self._write_obj(fjile_3ma, fout)
+
+    @staticmethod
+    def _write_obj(fjile_3ma, fout):
         vertex_index = 0
         prev_vertex_index = vertex_index
         forward = 0
         meshes = fjile_3ma["meshes"]
         mesh_num = len(meshes)
-
-        asyncio.run(self.convertingStatus())
 
         for msh in range(mesh_num):
 
@@ -157,9 +138,28 @@ class Application:
                     fout.write(" "+str(fcx_ndx+1+(forward*prev_vertex_index)))
                 fout.write("\n")    
 
-        file_3ma.close()
-        fout.close()
-        asyncio.run(self.doneStatus())
+
+    def _convert_in_background(self, input_filename, output_filename):
+        try:
+            self.convert(input_filename, output_filename)
+        except Exception as error:
+            self.root.after(0, self._conversion_failed, error)
+        else:
+            self.root.after(0, self._conversion_finished)
+
+    def _conversion_finished(self):
+        self.convertButton.config(state="normal")
+        self.browseInputButton.config(state="normal")
+        self.browseOutputButton.config(state="normal")
+        self.set_status_text("Convert Done", reset_after=2)
+        messagebox.showinfo("Conversion complete", "The OBJ file was created.", parent=self.root)
+
+    def _conversion_failed(self, error):
+        self.convertButton.config(state="normal")
+        self.browseInputButton.config(state="normal")
+        self.browseOutputButton.config(state="normal")
+        self.set_status_text("Conversion failed", reset_after=3)
+        messagebox.showerror("Conversion failed", str(error), parent=self.root)
 
     # ------Events------    
     # Input Browse on Click
@@ -177,11 +177,10 @@ class Application:
 
         if input_selection:
             input_filename_3ma = input_selection
-            #self.inputBox.config(text=input_selection)
             self.setInputBox(input_selection)
-            asyncio.run(self.inputImportDoneStatus())            
+            self.set_status_text("Input File Loaded", reset_after=2)
         else:
-            asyncio.run(self.inputImportCancelledStatus())
+            self.set_status_text("Input File Load Cancelled by User", reset_after=2)
 
     # Output Browse on Click
     def on_output_browse_click(self):
@@ -198,29 +197,33 @@ class Application:
 
         if output_selection:
             output_filename_3ma = output_selection
-            #self.outputBox.config(text=output_selection)
             self.setOutputBox(output_selection)
-            asyncio.run(self.outputImportDoneStatus())            
+            self.set_status_text("Output File Loaded", reset_after=2)
         else:
-            asyncio.run(self.outputImportCancelledStatus())
+            self.set_status_text("Output File Load Cancelled by User", reset_after=2)
 
     # Convert Button on Click
     def on_convert_click(self):
-        if self.checkInputPathExist() == False:
+        if self.checkInputPathEmpty():
             return
-        if self.checkOutputPathExist() == False:
+        if self.checkOutputPathEmpty():
             return
-        if self.checkInputPathEmpty() == True:
+        if not self.checkInputPathExist():
             return
-        if self.checkOutputPathEmpty() == True:
+        if not self.checkOutputPathExist():
             return
 
-        convertThread = threading.Thread(
-            target=self.convert
-        )
-
-        convertThread.start()      
-        convertThread.join()
+        input_filename = self.getInputBox()
+        output_filename = self.getOutputBox()
+        self.convertButton.config(state="disabled")
+        self.browseInputButton.config(state="disabled")
+        self.browseOutputButton.config(state="disabled")
+        self.set_status_text("Converting to OBJ")
+        threading.Thread(
+            target=self._convert_in_background,
+            args=(input_filename, output_filename),
+            daemon=True
+        ).start()
 
     def main(self):
         # ------Root------
