@@ -244,15 +244,15 @@ class Application:
             fill="both"           
         )
 
-        """
         winwidth = self.root.winfo_width()
         winheight = self.root.winfo_height()
-        """
 
         self.controlLayout = tk.Frame(
-            self.root,            
+            self.root,         
+            width=winwidth * 0.9,
+            height=winheight * 0.5
         )
-        self.controlLayout.pack_propagate(True)
+        self.controlLayout.pack_propagate(False)
         self.controlLayout.place(
             relx=0.5, rely=0.5, 
             anchor="center"
