@@ -228,10 +228,10 @@ class Application:
     def main(self):
         # ------Root------
         self.root = tk.Tk()
-        self.root.geometry("1000x445")
+        self.root.geometry("1000x654")
+        self.root.minsize(600, 400)
         self.title = "3ma To Obj Converter"
         self.root.title(self.title)
-        self.root.update_idletasks()
 
         # ------Title, Controls, and Footer------
         self.title = tk.Label(
@@ -243,31 +243,31 @@ class Application:
         )
         self.title.pack(
             side="top",
-            fill="both"           
+            fill="x"
         )
-
-        winwidth = self.root.winfo_width()
-        winheight = self.root.winfo_height()
 
         self.controlLayout = tk.Frame(
-            self.root,         
-            width=winwidth * 0.9,
-            height=winheight * 0.5
+            self.root,
+            padx=40,
+            pady=30
         )
-        self.controlLayout.pack_propagate(False)
-        self.controlLayout.place(
-            relx=0.5, rely=0.5, 
-            anchor="center"
+        self.controlLayout.pack(
+            fill="both",
+            expand=True
         )
+        self.controlLayout.columnconfigure(1, weight=1)
+        self.controlLayout.rowconfigure(4, weight=1)
 
         self.inputText = tk.Label(
             self.controlLayout,
             text="Input File:"
         )
-        self.inputText.pack(
-            anchor="nw",
-            padx=10,
-            pady=10
+        self.inputText.grid(
+            row=0,
+            column=0,
+            sticky="w",
+            padx=(0, 12),
+            pady=(0, 10)
         )
 
         self.inputBox = tk.Entry(
@@ -276,10 +276,11 @@ class Application:
         self.inputBox.config(
             state="readonly"
         )
-        self.inputBox.pack(
-            fill="both",
-            padx=20,
-            pady=10
+        self.inputBox.grid(
+            row=0,
+            column=1,
+            sticky="ew",
+            pady=(0, 10)
         )
 
         self.browseInputButton = tk.Button(
@@ -289,19 +290,23 @@ class Application:
             foreground="#FFFFFF",
             command=self.on_input_browse_click
         )
-        self.browseInputButton.pack(
-            anchor="ne",
-            padx=23
+        self.browseInputButton.grid(
+            row=0,
+            column=2,
+            padx=(12, 0),
+            pady=(0, 10)
         )
 
         self.outputText = tk.Label(
             self.controlLayout,
             text="Converted Output File:"
         )
-        self.outputText.pack(
-            anchor="nw",
-            padx=10,
-            pady=10
+        self.outputText.grid(
+            row=1,
+            column=0,
+            sticky="w",
+            padx=(0, 12),
+            pady=(0, 10)
         )
 
         self.outputBox = tk.Entry(
@@ -310,10 +315,11 @@ class Application:
         self.outputBox.config(
             state="readonly"
         )
-        self.outputBox.pack(         
-            fill="both",
-            padx=20,
-            pady=10
+        self.outputBox.grid(
+            row=1,
+            column=1,
+            sticky="ew",
+            pady=(0, 10)
         )
 
         self.browseOutputButton = tk.Button(
@@ -323,9 +329,11 @@ class Application:
             foreground="#FFFFFF",
             command=self.on_output_browse_click
         )
-        self.browseOutputButton.pack(
-            anchor="ne",
-            padx=23
+        self.browseOutputButton.grid(
+            row=1,
+            column=2,
+            padx=(12, 0),
+            pady=(0, 10)
         )
 
         self.convertButton = tk.Button(
@@ -335,8 +343,11 @@ class Application:
             foreground="#FFFFFF",
             command=self.on_convert_click
         )
-        self.convertButton.pack(
-            pady=23
+        self.convertButton.grid(
+            row=2,
+            column=0,
+            columnspan=3,
+            pady=(20, 0)
         )
 
         self.statusbar = tk.Label(
@@ -348,7 +359,7 @@ class Application:
         )
         self.statusbar.pack(
             side="bottom",
-            fill="both"           
+            fill="x"
         )
 
         self.footer = tk.Label(
@@ -360,7 +371,7 @@ class Application:
         )
         self.footer.pack(
             side="bottom",
-            fill="both"           
+            fill="x"
         )
 
         # ------MainLoop------        
