@@ -225,7 +225,32 @@ class Application:
             args=(input_filename, output_filename),
             daemon=True
         ).start()
-
+     
+    # Open With QuickRay
+    def on_openwithqr_clicked(self):
+        quickrayArgs = ["QuickRay", self.getOutputBox()]
+        try:
+            qr = subprocess.Popen(quickrayArgs) # QuickRay
+            self.set_status_text(f"QuickRay has been started with PID, {qr.pid}", 1000)
+        except FileNotFoundError:
+            messagebox.showerror(
+                "QuickRay Error",
+                f"Error: The executable '{quickrayArgs[0]}' was not found.", 
+                parent=self.root
+            )
+        except PermissionError:
+            messagebox.showerror(
+                "QuickRay Error",
+                f"Error: Permission denied when trying to run '{quickrayArgs[0]}'.",
+                parent=self.root
+            )
+        except OSError as e:
+            messagebox.showerror(
+                "QuickRay Error",
+                f"OS error occurred while starting the process: {e}",
+                parent=self.root
+            )
+        
     def main(self):
         # ------Root------
         self.root = tk.Tk()
@@ -346,6 +371,20 @@ class Application:
         )
         self.convertButton.grid(
             row=2,
+            column=0,
+            columnspan=3,
+            pady=(20, 0)
+        )
+        
+        self.openInQR = tk.Button(
+            self.controlLayout,
+            text="Open Output in QuickRay",
+            bg="#050055",
+            foreground="#FFFFFF",
+            command=self.on_openwithqr_clicked
+        )
+        self.openInQR.grid(
+            row=3,
             column=0,
             columnspan=3,
             pady=(20, 0)
