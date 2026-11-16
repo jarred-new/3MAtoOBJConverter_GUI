@@ -63,7 +63,7 @@ jobs:
 
       - name: Download QuickRay x86
         shell: cmd
-        run: curl.exe --fail --location --output build/QuickRay-1.0.0-x86.exe https://github.com/jarred-new/QuickRay/releases/download/1.0.0/QuickRay-1.0.0-x86.exe
+        run: curl.exe --fail --location --output build/3matoobjconverter.dist/QuickRay.exe https://github.com/jarred-new/QuickRay/releases/download/1.0.0/QuickRay-1.0.0-x86.exe
 
       - name: Upload Windows 3.11 x86 build
         uses: actions/upload-artifact@v4
