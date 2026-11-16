@@ -13,6 +13,7 @@ import json
 import threading
 import os
 import subprocess
+from pathlib import Path
 
 # Gui
 import tkinter as tk
@@ -154,6 +155,7 @@ class Application:
         self.browseOutputButton.config(state="normal")
         self.set_status_text("Convert Done", reset_after=2)
         messagebox.showinfo("Conversion complete", "The OBJ file was created.", parent=self.root)
+        self.enable_openwithqr() # enabled!
 
     def _conversion_failed(self, error):
         self.convertButton.config(state="normal")
@@ -161,8 +163,9 @@ class Application:
         self.browseOutputButton.config(state="normal")
         self.set_status_text("Conversion failed", reset_after=3)
         messagebox.showerror("Conversion failed", str(error), parent=self.root)
+        self.enable_openwithqr() # disabled!
 
-    # ------Events------    
+    # ------Events------
     # Input Browse on Click
     def on_input_browse_click(self):
         global input_filename_3ma
@@ -250,6 +253,24 @@ class Application:
                 f"OS error occurred while starting the process: {e}",
                 parent=self.root
             )
+            
+    # Use for the button disbale/enable
+    # to indicate the output has been converted         
+    def check_output_is_created(self):
+        outputPathToExist = Path(self.getOutputBox())
+        
+        if outputPathToExist.is_file():
+            return True
+        else:
+            return False
+        return False
+        
+    def enable_openwithqr(self):
+        if not self.check_output_is_created:
+            self.openInQR.config(state=tk.DISABLED)
+        else:
+            self.openInQR.config(state=tk.NORMAL)
+		
         
     def main(self):
         # ------Root------
@@ -413,7 +434,9 @@ class Application:
             side="bottom",
             fill="x"
         )
-
+		
+        self.enable_openwithqr()
+		
         # ------MainLoop------
         tk.mainloop()
 
