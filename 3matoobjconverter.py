@@ -12,6 +12,7 @@ Modified on Fri Sep 4 2026
 import json
 import threading
 import os
+import subprocess
 
 # Gui
 import tkinter as tk
@@ -374,7 +375,7 @@ class Application:
             fill="x"
         )
 
-        # ------MainLoop------        
+        # ------MainLoop------
         tk.mainloop()
 
 if __name__ == "__main__":
