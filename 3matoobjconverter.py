@@ -25,7 +25,6 @@ from tkinter import filedialog as fd
 input_filename_3ma = ""
 output_filename_3ma = ""
 
-
 class Application:
     # ------Status Bar Manipulation------
     def set_status_text(self, status_text, reset_after=None):
@@ -42,18 +41,18 @@ class Application:
     def getOutputBox(self):
         outputText = self.outputBox.get()
         return outputText
-
+        
     # ------Clear/Set Entrys------
     def setInputBox(self, inputText):
         if self.checkInputPathEmpty(False):
-            self.inputBox.insert(0, inputText)
+        	self.inputBox.insert(0, inputText)
         else:
             self.inputBox.delete(0, tk.END)
             self.inputBox.insert(0, inputText)
-
+        
     def setOutputBox(self, outputText):
-        if self.checkOutputPathEmpty(False):
-            self.outputBox.insert(0, outputText)
+        if self.checkInputPathEmpty(False):
+        	self.outputBox.insert(0, outputText)
         else:
             self.outputBox.delete(0, tk.END)
             self.outputBox.insert(0, outputText)
@@ -66,24 +65,23 @@ class Application:
                 messagebox.showerror(
                     "Error",
                     "The path in the input file does not exist",
-                    parent=self.root,
+                    parent=self.root
                 )
-
+                
             return False
         else:
             return True
 
     def checkOutputPathExist(self, withError):
         strOutputPath = self.getOutputBox()
-        output_dir = os.path.dirname(strOutputPath) or os.getcwd()
-        if not os.path.isdir(output_dir):
+        if not os.path.isdir(os.path.dirname(strOutputPath)):
             if withError is True:
                 messagebox.showerror(
                     "Error",
                     "The path in the output file does not exist",
-                    parent=self.root,
+                    parent=self.root
                 )
-
+                
             return False
         else:
             return True
@@ -95,9 +93,9 @@ class Application:
                 messagebox.showerror(
                     "Error",
                     "The path in the input box is left empty",
-                    parent=self.root,
+                    parent=self.root
                 )
-
+                
             return True
         else:
             return False
@@ -109,7 +107,7 @@ class Application:
                 messagebox.showerror(
                     "Error",
                     "The path in the output box is left empty",
-                    parent=self.root,
+                    parent=self.root
                 )
             return True
         else:
@@ -117,20 +115,11 @@ class Application:
 
     # code from the author: Gxiraudon
     def convert(self, input_filename, output_filename):
-        try:
-            with open(input_filename, encoding="utf-8") as file_3ma:
-                try:
-                    fjile_3ma = json.load(file_3ma)
-                except json.JSONDecodeError as exc:
-                    raise ValueError(f"Invalid 3MA JSON: {exc.msg}") from exc
+        with open(input_filename, encoding="utf-8") as file_3ma:
+            fjile_3ma = json.load(file_3ma)
 
-            if not isinstance(fjile_3ma, dict) or "meshes" not in fjile_3ma:
-                raise ValueError("The 3MA file is missing the required 'meshes' data.")
-
-            with open(output_filename, "w", encoding="utf-8") as fout:
-                self._write_obj(fjile_3ma, fout)
-        except OSError as exc:
-            raise OSError(f"Unable to read or write conversion files: {exc}") from exc
+        with open(output_filename, "w", encoding="utf-8") as fout:
+            self._write_obj(fjile_3ma, fout)
 
     @staticmethod
     def _write_obj(fjile_3ma, fout):
@@ -141,27 +130,29 @@ class Application:
         mesh_num = len(meshes)
 
         for msh in range(mesh_num):
+
             fout.write("\ng \n")
             preciseFactor = meshes[msh]["preciseFactor"]
             prev_vertex_index = vertex_index
-            for vtx in range(0, len(meshes[msh]["_positions"]), 3):
-                _pos_0 = meshes[msh]["_positions"][vtx] / preciseFactor
-                _pos_1 = meshes[msh]["_positions"][vtx + 1] / preciseFactor
-                _pos_2 = (meshes[msh]["_positions"][vtx + 2] * -1) / preciseFactor
-                vtx_string = "v " + str(_pos_0) + " " + str(_pos_1) + " " + str(_pos_2) + "\n"
+            for vtx in range(0,len(meshes[msh]["_positions"]),3):
+                _pos_0 = meshes[msh]["_positions"][vtx]/preciseFactor 
+                _pos_1 = meshes[msh]["_positions"][vtx+1]/preciseFactor 
+                _pos_2 = (meshes[msh]["_positions"][vtx+2]*-1)/preciseFactor 
+                vtx_string = "v "+str(_pos_0)+" "+str(_pos_1)+" "+str(_pos_2)+"\n"
                 fout.write(vtx_string)
-                vertex_index = vertex_index + 1
+                vertex_index = vertex_index+1
 
-            if msh > 0:
+            if msh>0:
                 forward = 1
 
             UnivertsList = meshes[msh]["facesUnivertsList"]
-            fout.write("\ng name" + str(msh) + " \n")
+            fout.write("\ng name"+str(msh)+" \n")
             for fcx in UnivertsList:
                 fout.write("f")
                 for fcx_ndx in fcx["u"]:
-                    fout.write(" " + str(fcx_ndx + 1 + (forward * prev_vertex_index)))
-                fout.write("\n")
+                    fout.write(" "+str(fcx_ndx+1+(forward*prev_vertex_index)))
+                fout.write("\n")    
+
 
     def _convert_in_background(self, input_filename, output_filename):
         try:
@@ -177,7 +168,7 @@ class Application:
         self.browseOutputButton.config(state="normal")
         self.set_status_text("Convert Done", reset_after=2)
         messagebox.showinfo("Conversion complete", "The OBJ file was created.", parent=self.root)
-        self.enable_openwithqr()  # enabled!
+        self.enable_openwithqr() # enabled!
 
     def _conversion_failed(self, error):
         self.convertButton.config(state="normal")
@@ -185,7 +176,7 @@ class Application:
         self.browseOutputButton.config(state="normal")
         self.set_status_text("Conversion failed", reset_after=3)
         messagebox.showerror("Conversion failed", str(error), parent=self.root)
-        self.enable_openwithqr()  # disabled!
+        self.enable_openwithqr() # disabled!
 
     # ------Events------
     # Input Browse on Click
@@ -193,12 +184,12 @@ class Application:
         global input_filename_3ma
         filterInput = [
             ("3ma Files", "*.3ma"),
-            ("All Files", "*.*"),
+            ("All Files", "*.*")
         ]
 
         input_selection = fd.askopenfilename(
             title="Open 3ma File...",
-            filetypes=filterInput,
+            filetypes=filterInput            
         )
 
         if input_selection:
@@ -213,12 +204,12 @@ class Application:
         global output_filename_3ma
         filterOutput = [
             ("Obj Files", "*.obj"),
-            ("All Files", "*.*"),
+            ("All Files", "*.*")
         ]
 
         output_selection = fd.asksaveasfilename(
             title="Save Converted obj File as...",
-            filetypes=filterOutput,
+            filetypes=filterOutput            
         )
 
         if output_selection:
@@ -248,50 +239,52 @@ class Application:
         threading.Thread(
             target=self._convert_in_background,
             args=(input_filename, output_filename),
-            daemon=True,
+            daemon=True
         ).start()
-
+     
     # Open With QuickRay
     def on_openwithqr_clicked(self):
-        quickrayArgs = ["QuickRay", self.getOutputBox()]
+        quickrayArgs = ["QuickRay", self.getOutputBox(), "&& pause"]
         try:
-            qr = subprocess.Popen(quickrayArgs)  # QuickRay
-            self.set_status_text(f"QuickRay has been started with PID, {qr.pid}", reset_after=2)
+            qr = subprocess.Popen(quickrayArgs) # QuickRay
+            self.set_status_text(f"QuickRay has been started with PID, {qr.pid}", 1000)
         except FileNotFoundError:
             messagebox.showerror(
                 "QuickRay Error",
-                f"Error: The executable '{quickrayArgs[0]}' was not found.",
-                parent=self.root,
+                f"Error: The executable '{quickrayArgs[0]}' was not found.", 
+                parent=self.root
             )
         except PermissionError:
             messagebox.showerror(
                 "QuickRay Error",
                 f"Error: Permission denied when trying to run '{quickrayArgs[0]}'.",
-                parent=self.root,
+                parent=self.root
             )
         except OSError as e:
             messagebox.showerror(
                 "QuickRay Error",
                 f"OS error occurred while starting the process: {e}",
-                parent=self.root,
+                parent=self.root
             )
-
+            
     # Use for the button disbale/enable
-    # to indicate the output has been converted
+    # to indicate the output has been converted         
     def check_output_is_created(self):
         outputPathToExist = Path(self.getOutputBox())
-
+        
         if outputPathToExist.is_file():
             return True
         else:
             return False
-
+        return False
+        
     def enable_openwithqr(self):
-        if not self.check_output_is_created():
+        if not self.check_output_is_created:
             self.openInQR.config(state="disabled")
         else:
             self.openInQR.config(state="normal")
-
+		
+        
     def main(self):
         # ------Root------
         self.root = tk.Tk()
@@ -306,48 +299,48 @@ class Application:
             text="3ma To Obj Converter",
             bg="#000555",
             foreground="#FFFFFF",
-            font=font.Font(weight="bold", size=32),
+            font=font.Font(weight="bold", size=32)
         )
         self.title.pack(
             side="top",
-            fill="x",
+            fill="x"
         )
 
         self.controlLayout = tk.Frame(
             self.root,
             padx=40,
-            pady=30,
+            pady=30
         )
         self.controlLayout.pack(
             fill="both",
-            expand=True,
+            expand=True
         )
         self.controlLayout.columnconfigure(1, weight=1)
         self.controlLayout.rowconfigure(4, weight=1)
 
         self.inputText = tk.Label(
             self.controlLayout,
-            text="Input File:",
+            text="Input File:"
         )
         self.inputText.grid(
             row=0,
             column=0,
             sticky="w",
             padx=(0, 12),
-            pady=(0, 10),
+            pady=(0, 10)
         )
 
         self.inputBox = tk.Entry(
-            self.controlLayout,
+            self.controlLayout              
         )
-        # self.inputBox.config(
+        #self.inputBox.config(
         #    state="readonly"
-        # )
+        #)
         self.inputBox.grid(
             row=0,
             column=1,
             sticky="ew",
-            pady=(0, 10),
+            pady=(0, 10)
         )
 
         self.browseInputButton = tk.Button(
@@ -355,38 +348,38 @@ class Application:
             text="...",
             bg="#050055",
             foreground="#FFFFFF",
-            command=self.on_input_browse_click,
+            command=self.on_input_browse_click
         )
         self.browseInputButton.grid(
             row=0,
             column=2,
             padx=(12, 0),
-            pady=(0, 10),
+            pady=(0, 10)
         )
 
         self.outputText = tk.Label(
             self.controlLayout,
-            text="Converted Output File:",
+            text="Converted Output File:"
         )
         self.outputText.grid(
             row=1,
             column=0,
             sticky="w",
             padx=(0, 12),
-            pady=(0, 10),
+            pady=(0, 10)
         )
 
         self.outputBox = tk.Entry(
-            self.controlLayout,
+            self.controlLayout
         )
-        # self.outputBox.config(
+        #self.outputBox.config(
         #    state="readonly"
-        # )
+        #)
         self.outputBox.grid(
             row=1,
             column=1,
             sticky="ew",
-            pady=(0, 10),
+            pady=(0, 10)
         )
 
         self.browseOutputButton = tk.Button(
@@ -394,13 +387,13 @@ class Application:
             text="...",
             bg="#050055",
             foreground="#FFFFFF",
-            command=self.on_output_browse_click,
+            command=self.on_output_browse_click
         )
         self.browseOutputButton.grid(
             row=1,
             column=2,
             padx=(12, 0),
-            pady=(0, 10),
+            pady=(0, 10)
         )
 
         self.convertButton = tk.Button(
@@ -408,27 +401,27 @@ class Application:
             text="Convert Now",
             bg="#050055",
             foreground="#FFFFFF",
-            command=self.on_convert_click,
+            command=self.on_convert_click
         )
         self.convertButton.grid(
             row=2,
             column=0,
             columnspan=3,
-            pady=(20, 0),
+            pady=(20, 0)
         )
-
+        
         self.openInQR = tk.Button(
             self.controlLayout,
             text="Open Output in QuickRay",
             bg="#050055",
             foreground="#FFFFFF",
-            command=self.on_openwithqr_clicked,
+            command=self.on_openwithqr_clicked
         )
         self.openInQR.grid(
             row=3,
             column=0,
             columnspan=3,
-            pady=(20, 0),
+            pady=(20, 0)
         )
 
         self.statusbar = tk.Label(
@@ -436,11 +429,11 @@ class Application:
             text="Ready",
             bg="#000555",
             foreground="#FFFFFF",
-            font=font.Font(weight="bold", size=14),
+            font=font.Font(weight="bold", size=14)
         )
         self.statusbar.pack(
             side="bottom",
-            fill="x",
+            fill="x"
         )
 
         self.footer = tk.Label(
@@ -448,18 +441,17 @@ class Application:
             text="author: Gxiraudon | forked by: Jarred",
             bg="#000555",
             foreground="#FFFFFF",
-            font=font.Font(weight="bold", size=14),
+            font=font.Font(weight="bold", size=14)
         )
         self.footer.pack(
             side="bottom",
-            fill="x",
+            fill="x"
         )
-
+		
         self.enable_openwithqr()
-
+		
         # ------MainLoop------
         tk.mainloop()
-
 
 if __name__ == "__main__":
     Application().main()
