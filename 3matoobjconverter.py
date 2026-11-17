@@ -44,12 +44,18 @@ class Application:
         
     # ------Clear/Set Entrys------
     def setInputBox(self, inputText):
-        self.inputBox.delete(0, tk.END)
-        self.inputBox.insert(0, inputText)
+        if self.checkInputPathEmpty():
+        	self.inputBox.insert(0, inputText)
+        else:
+            self.inputBox.delete(0, tk.END)
+            self.inputBox.insert(0, inputText)
         
     def setOutputBox(self, outputText):
-        self.outputBox.delete(0, tk.END)
-        self.outputBox.insert(0, outputText)
+        if self.checkInputPathEmpty():
+        	self.outputBox.insert(0, outputText)
+        else:
+            self.outputBox.delete(0, tk.END)
+            self.outputBox.insert(0, outputText)
 
     # ------Check Path Exists or Empty------
     def checkInputPathExist(self):
@@ -320,9 +326,9 @@ class Application:
         self.inputBox = tk.Entry(
             self.controlLayout              
         )
-        self.inputBox.config(
-            state="readonly"
-        )
+        #self.inputBox.config(
+        #    state="readonly"
+        #)
         self.inputBox.grid(
             row=0,
             column=1,
@@ -359,9 +365,9 @@ class Application:
         self.outputBox = tk.Entry(
             self.controlLayout
         )
-        self.outputBox.config(
-            state="readonly"
-        )
+        #self.outputBox.config(
+        #    state="readonly"
+        #)
         self.outputBox.grid(
             row=1,
             column=1,
