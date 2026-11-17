@@ -244,7 +244,7 @@ class Application:
      
     # Open With QuickRay
     def on_openwithqr_clicked(self):
-        quickrayArgs = ["QuickRay", self.getOutputBox(), "&& pause"]
+        quickrayArgs = ["QuickRay", self.getOutputBox()]
         try:
             qr = subprocess.Popen(quickrayArgs) # QuickRay
             self.set_status_text(f"QuickRay has been started with PID, {qr.pid}", 1000)
