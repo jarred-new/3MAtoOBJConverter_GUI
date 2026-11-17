@@ -12,6 +12,7 @@ This is a GUI for the 3ma to OBJ Converter. It allows users to convert 3ma files
 3. Select the 3ma file you want to convert.
 4. Choose the location where you want to save the converted OBJ file.
 5. Click the "Convert Now" button to start the conversion process.
+6. (NEW!) You can preview with my new 3D viewer called [QuickRay](https://github.com/jarred-new/QuickRay)
 
 ## Special Thanks
 - [@JarredIzKool](https://github.com/jarred-new)
