@@ -44,64 +44,71 @@ class Application:
         
     # ------Clear/Set Entrys------
     def setInputBox(self, inputText):
-        if self.checkInputPathEmpty():
+        if self.checkInputPathEmpty(False):
         	self.inputBox.insert(0, inputText)
         else:
             self.inputBox.delete(0, tk.END)
             self.inputBox.insert(0, inputText)
         
     def setOutputBox(self, outputText):
-        if self.checkInputPathEmpty():
+        if self.checkInputPathEmpty(False):
         	self.outputBox.insert(0, outputText)
         else:
             self.outputBox.delete(0, tk.END)
             self.outputBox.insert(0, outputText)
 
     # ------Check Path Exists or Empty------
-    def checkInputPathExist(self):
+    def checkInputPathExist(self, withError):
         strInputPath = self.getInputBox()
         if not os.path.exists(strInputPath):
-            messagebox.showerror(
-                "Error",
-                "The path in the input file does not exist",
-                parent=self.root
-            )
+            if withError is True:
+                messagebox.showerror(
+                    "Error",
+                    "The path in the input file does not exist",
+                    parent=self.root
+                )
+                
             return False
         else:
             return True
 
-    def checkOutputPathExist(self):
+    def checkOutputPathExist(self, withError):
         strOutputPath = self.getOutputBox()
         if not os.path.isdir(os.path.dirname(strOutputPath)):
-            messagebox.showerror(
-                "Error",
-                "The path in the output file does not exist",
-                parent=self.root
-            )
+            if withError is True:
+                messagebox.showerror(
+                    "Error",
+                    "The path in the output file does not exist",
+                    parent=self.root
+                )
+                
             return False
         else:
             return True
 
-    def checkInputPathEmpty(self):
+    def checkInputPathEmpty(self, withError):
         strInputPath = self.getInputBox()
         if not strInputPath:
-            messagebox.showerror(
-                "Error",
-                "The path in the input box is left empty",
-                parent=self.root
-            )
+            if withError is True:
+                messagebox.showerror(
+                    "Error",
+                    "The path in the input box is left empty",
+                    parent=self.root
+                )
+                
             return True
         else:
             return False
 
-    def checkOutputPathEmpty(self):
+    def checkOutputPathEmpty(self, withError):
         strOutputPath = self.getOutputBox()
         if not strOutputPath:
-            messagebox.showerror(
-                "Error",
-                "The path in the output box is left empty",
-                parent=self.root
-            )
+            if withError is True:
+                messagebox.showerror(
+                    "Error",
+                    "The path in the output box is left empty",
+                    parent=self.root
+                )
             return True
         else:
             return False
@@ -214,13 +221,13 @@ class Application:
 
     # Convert Button on Click
     def on_convert_click(self):
-        if self.checkInputPathEmpty():
+        if self.checkInputPathEmpty(True):
             return
-        if self.checkOutputPathEmpty():
+        if self.checkOutputPathEmpty(True):
             return
-        if not self.checkInputPathExist():
+        if not self.checkInputPathExist(True):
             return
-        if not self.checkOutputPathExist():
+        if not self.checkOutputPathExist(True):
             return
 
         input_filename = self.getInputBox()
@@ -273,9 +280,9 @@ class Application:
         
     def enable_openwithqr(self):
         if not self.check_output_is_created:
-            self.openInQR.config(state=tk.DISABLED)
+            self.openInQR.config(state="disabled")
         else:
-            self.openInQR.config(state=tk.NORMAL)
+            self.openInQR.config(state="normal")
 		
         
     def main(self):
